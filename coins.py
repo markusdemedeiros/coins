@@ -278,10 +278,9 @@ if __name__ == "__main__":
     xs_pi_div_four = np.array([i * delta for i in range (n + 1)])
 
 
-    # compare_cos(xs_pi_div_four, 5000)
-    # compare_sin(xs_pi_div_four, 5000)
-
-    # compare_arctan(xs_one, 5000)
-    # compare_exp_neg(xs_one, 5000)
-    # compare_inv_one_plus(xs_one, 5000)
-    # compare_log_one_plus(xs_one, 20000)
+    compare_cos(xs_pi_div_four, 5000)
+    compare_sin(xs_pi_div_four, 5000)
+    compare_arctan(xs_one, 5000)
+    compare_exp_neg(xs_one, 5000)
+    compare_inv_one_plus(xs_one, 5000)
+    compare_log_one_plus(xs_one, 5000)
