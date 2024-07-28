@@ -94,18 +94,31 @@ def bern_sin_indirect(x):
 def bern_arctan_1_direct(x):
     if (x > 1): return 0
     k = 1
-    Dk = 1
-    while (bernoulli.rvs(Dk, size=1).sum() == 1):
+    Dk = 1.0
+    while (bernoulli.rvs(Dk * x, size=1).sum() == 1):
         k += 1
-        Dk = float(k * x) / float(k - 1)
-    return (((k % 4) == 1) or ((k % 4) == 2))
+        Dk = float(k - 1) / float(k)
+    return (((k % 4) == 2) or ((k % 4) == 3))
+
+
+
+# Return a sample from the random variable (bernoulli e^x)
+# Taylor series drawn directly from e^(-x)
+# Good for 0 <= x <= 1
+def bern_exp_neg_1_direct(x):
+    if (x > 1): return 0
+    k = 1
+    while (bernoulli.rvs(x / float(k), size=1).sum() == 1):
+        k += 1
+    return ((k % 2) == 1)
+
 
 
 
 
 
 # Number of samples
-N = 1000
+N = 5000
 
 # Plot grid
 n = 100
@@ -120,7 +133,7 @@ def sample_data(f, xs):
 
 
 def compare_cos(xs):
-    ideal_cos = np.cos(xs)
+    ideal = np.cos(xs)
     values_cos_1 = sample_data(bern_cos_1, xs)
     values_cos_sq2 = sample_data(bern_cos_sq2, xs)
     values_cos_1_approx = sample_data(bern_cos_1_approx, xs)
@@ -136,14 +149,14 @@ def compare_cos(xs):
     plt.plot(xs, values_cos_sq2, color=colours[2], label="E[bern_cos_sq2(x)]")
     plt.plot(xs, values_cos_1_direct, color=colours[3], label="E[bern_cos_1_direct(x)]")
     plt.plot(xs, values_cos_indirect, color=colours[4], label="E[bern_cos_indirect(x)]")
-    plt.plot(xs, ideal_cos, color="black", linestyle="--", label="cos(x)")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="cos(x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
     plt.savefig("cos.pdf")
 
 
 def compare_sin(xs):
-    ideal_sin = np.sin(xs)
+    ideal = np.sin(xs)
     values_sin_1_direct = sample_data(bern_sin_1_direct, xs)
     values_sin_indirect = sample_data(bern_sin_indirect, xs)
 
@@ -153,13 +166,48 @@ def compare_sin(xs):
     plt.title("sin samplers, N={}".format(N))
     plt.plot(xs, values_sin_1_direct, color=colours[0], label="E[bern_sin_1_direct(x)]")
     plt.plot(xs, values_sin_indirect, color=colours[1], label="E[bern_sin_indirect(x)]")
-    plt.plot(xs, ideal_sin, color="black", linestyle="--", label="sin(x)")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="sin(x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
     plt.savefig("sin.pdf")
 
 
+def compare_arctan(xs):
+    ideal = np.arctan(xs)
+    values_arctan_1_direct = sample_data(bern_arctan_1_direct, xs)
+
+    colours = plt.cm.rainbow(np.linspace(0, 1, 1))
+
+    plt.figure(figsize=(12,8))
+    plt.title("arctan samplers, N={}".format(N))
+    plt.plot(xs, values_arctan_1_direct, color=colours[0], label="E[bern_arctan_direct(x)]")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="arctan(x)")
+    plt.xlabel("x")
+    plt.legend(loc = "best")
+    plt.savefig("arctan.pdf")
+
+
+def compare_exp_neg(xs):
+    ideal = np.exp(-xs)
+    values_exp_1_direct = sample_data(bern_exp_neg_1_direct, xs)
+
+    colours = plt.cm.rainbow(np.linspace(0, 1, 1))
+
+    plt.figure(figsize=(12,8))
+    plt.title("exp(-x) samplers, N={}".format(N))
+    plt.plot(xs, values_exp_1_direct, color=colours[0], label="E[bern_exp_neg_direct(x)]")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="exp(-x)")
+    plt.xlabel("x")
+    plt.legend(loc = "best")
+    plt.savefig("exp.pdf")
+
+
+
+
+
 if __name__ == "__main__":
     xs = np.array([i * delta for i in range (n + 1)])
-    compare_cos(xs)
-    compare_sin(xs)
+    # compare_cos(xs)
+    # compare_sin(xs)
+    # compare_arctan(xs)
+    compare_exp_neg(xs)
