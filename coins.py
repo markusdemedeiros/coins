@@ -6,6 +6,10 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import os
 
+##
+## Samplers
+##
+
 # Return a sample from the random variable (bernoulli (cos(x)))
 # Taylor series drawn from cos(sqrt(x^2))
 # Good for 0 <= x <= 1
@@ -125,29 +129,28 @@ def bern_inv_one_plus_direct(x):
 
 
 
+##
+## Tests and plots
+##
 
-# Number of samples
-N = 5000
 
-# Plot grid
-n = 100
-M = np.pi / 2.0
-delta = M / float (n)
 
-def sample_data(f, xs):
+
+def sample_data(f, xs, N):
     values = []
     for x in tqdm(xs):
         values += [np.array([f(x) for _ in range(N)]).mean()]
     return np.array(values)
 
 
-def compare_cos(xs):
+def compare_cos(xs, N):
+    print("Sampling: cos(x)")
     ideal = np.cos(xs)
-    values_cos_1 = sample_data(bern_cos_1, xs)
-    values_cos_sq2 = sample_data(bern_cos_sq2, xs)
-    values_cos_1_approx = sample_data(bern_cos_1_approx, xs)
-    values_cos_1_direct = sample_data(bern_cos_1_direct, xs)
-    values_cos_indirect = sample_data(bern_cos_indirect, xs)
+    values_cos_1 = sample_data(bern_cos_1, xs, N)
+    values_cos_sq2 = sample_data(bern_cos_sq2, xs, N)
+    values_cos_1_approx = sample_data(bern_cos_1_approx, xs, N)
+    values_cos_1_direct = sample_data(bern_cos_1_direct, xs, N)
+    values_cos_indirect = sample_data(bern_cos_indirect, xs, N)
 
     colours = plt.cm.rainbow(np.linspace(0, 1, 5))
 
@@ -164,10 +167,11 @@ def compare_cos(xs):
     plt.savefig("figures/cos.pdf")
 
 
-def compare_sin(xs):
+def compare_sin(xs, N):
+    print("Sampling: sin(x)")
     ideal = np.sin(xs)
-    values_sin_1_direct = sample_data(bern_sin_1_direct, xs)
-    values_sin_indirect = sample_data(bern_sin_indirect, xs)
+    values_sin_1_direct = sample_data(bern_sin_1_direct, xs, N)
+    values_sin_indirect = sample_data(bern_sin_indirect, xs, N)
 
     colours = plt.cm.rainbow(np.linspace(0, 1, 2))
 
@@ -181,9 +185,10 @@ def compare_sin(xs):
     plt.savefig("figures/sin.pdf")
 
 
-def compare_arctan(xs):
+def compare_arctan(xs, N):
+    print("Sampling: arctan(x)")
     ideal = np.arctan(xs)
-    values_arctan_1_direct = sample_data(bern_arctan_1_direct, xs)
+    values_arctan_1_direct = sample_data(bern_arctan_1_direct, xs, N)
 
     colours = plt.cm.rainbow(np.linspace(0, 1, 1))
 
@@ -196,9 +201,10 @@ def compare_arctan(xs):
     plt.savefig("figures/arctan.pdf")
 
 
-def compare_exp_neg(xs):
+def compare_exp_neg(xs, N):
+    print("Sampling: e^(-x)")
     ideal = np.exp(-xs)
-    values_exp_1_direct = sample_data(bern_exp_neg_1_direct, xs)
+    values_exp_1_direct = sample_data(bern_exp_neg_1_direct, xs, N)
 
     colours = plt.cm.rainbow(np.linspace(0, 1, 1))
 
@@ -210,9 +216,11 @@ def compare_exp_neg(xs):
     plt.legend(loc = "best")
     plt.savefig("figures/exp.pdf")
 
-def compare_inv_one_plus(xs):
+def compare_inv_one_plus(xs, N):
+    print("Sampling: 1/(1+x)")
+
     ideal = 1.0 / (1.0 + xs)
-    values_inv_one_plus_direct = sample_data(bern_inv_one_plus_direct, xs)
+    values_inv_one_plus_direct = sample_data(bern_inv_one_plus_direct, xs, N)
 
     colours = plt.cm.rainbow(np.linspace(0, 1, 1))
 
@@ -226,15 +234,28 @@ def compare_inv_one_plus(xs):
 
 
 
-
 if __name__ == "__main__":
 
     if not os.path.exists("./figures"):
         os.makedirs("./figures")
 
-    xs = np.array([i * delta for i in range (n + 1)])
-    # compare_cos(xs)
-    # compare_sin(xs)
-    # compare_arctan(xs)
-    # compare_exp_neg(xs)
-    compare_inv_one_plus(xs)
+    # Number of samples
+    N = 100
+
+    # Plot grid
+    n = 100
+    delta =  np.pi / float (2 * n)
+
+    # Range from [0, 1)
+    xs_one = np.array([i / float(N) for i in range (n)])
+
+    # Range from [0, pi/4]
+    xs_pi_div_four = np.array([i * delta for i in range (n + 1)])
+
+
+    compare_cos(xs_pi_div_four, N)
+    compare_sin(xs_pi_div_four, N)
+
+    compare_arctan(xs_one, N)
+    compare_exp_neg(xs_one, N)
+    compare_inv_one_plus(xs_one, N)
