@@ -154,6 +154,12 @@ def sample_data(f, xs, N):
         values += [np.array([f(x) for _ in range(N)]).mean()]
     return np.array(values)
 
+def sample_value_single(f, x, N):
+    success = 0
+    for _ in tqdm(range(N)):
+        success += f(x)
+    return (float(success) / float(N))
+
 
 def compare_cos(xs, N):
     print("Sampling: cos(x)")
@@ -263,6 +269,11 @@ def compare_log_one_plus(xs, N):
     plt.savefig("figures/log_one_plus.pdf")
 
 
+def pi_estimator(N):
+    print("Estimating pi:")
+    pi_div_four = sample_value_single(bern_arctan_1_direct, 1.0, N)
+    print("Estimate: {}".format(4*pi_div_four))
+
 
 if __name__ == "__main__":
 
@@ -277,10 +288,11 @@ if __name__ == "__main__":
     xs_one = np.array([float(i) / float(n) for i in range (n)])
     xs_pi_div_four = np.array([i * delta for i in range (n + 1)])
 
+    # compare_cos(xs_pi_div_four, 5000)
+    # compare_sin(xs_pi_div_four, 5000)
+    # compare_arctan(xs_one, 5000)
+    # compare_exp_neg(xs_one, 5000)
+    # compare_inv_one_plus(xs_one, 5000)
+    # compare_log_one_plus(xs_one, 5000)
 
-    compare_cos(xs_pi_div_four, 5000)
-    compare_sin(xs_pi_div_four, 5000)
-    compare_arctan(xs_one, 5000)
-    compare_exp_neg(xs_one, 5000)
-    compare_inv_one_plus(xs_one, 5000)
-    compare_log_one_plus(xs_one, 5000)
+    # pi_estimator(1000000) # Estimate: 3.141524
