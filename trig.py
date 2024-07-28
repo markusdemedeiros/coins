@@ -113,6 +113,15 @@ def bern_exp_neg_1_direct(x):
     return ((k % 2) == 1)
 
 
+# Return a sample from the random variable (bernoulli 1/(1+x))
+# Taylor series drawn directly from 1/(1+x)
+# Good for 0 <= x <= 1
+def bern_inv_one_plus_direct(x):
+    if (x > 1): return 0
+    k = 1
+    while (bernoulli.rvs(x, size=1).sum() == 1):
+        k += 1
+    return ((k % 2) == 1)
 
 
 
@@ -201,6 +210,19 @@ def compare_exp_neg(xs):
     plt.legend(loc = "best")
     plt.savefig("figures/exp.pdf")
 
+def compare_inv_one_plus(xs):
+    ideal = 1.0 / (1.0 + xs)
+    values_inv_one_plus_direct = sample_data(bern_inv_one_plus_direct, xs)
+
+    colours = plt.cm.rainbow(np.linspace(0, 1, 1))
+
+    plt.figure(figsize=(12,8))
+    plt.title("1/(1+x) samplers, N={}".format(N))
+    plt.plot(xs, values_inv_one_plus_direct, color=colours[0], label="E[bern_inv_one_plus_direct(x)]")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="exp(-x)")
+    plt.xlabel("x")
+    plt.legend(loc = "best")
+    plt.savefig("figures/inv_one_plus.pdf")
 
 
 
@@ -214,4 +236,5 @@ if __name__ == "__main__":
     # compare_cos(xs)
     # compare_sin(xs)
     # compare_arctan(xs)
-    compare_exp_neg(xs)
+    # compare_exp_neg(xs)
+    compare_inv_one_plus(xs)
