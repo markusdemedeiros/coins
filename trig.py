@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import bernoulli
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-
+import os
 
 # Return a sample from the random variable (bernoulli (cos(x)))
 # Taylor series drawn from cos(sqrt(x^2))
@@ -152,7 +152,7 @@ def compare_cos(xs):
     plt.plot(xs, ideal, color="black", linestyle="--", label="cos(x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
-    plt.savefig("cos.pdf")
+    plt.savefig("figures/cos.pdf")
 
 
 def compare_sin(xs):
@@ -169,7 +169,7 @@ def compare_sin(xs):
     plt.plot(xs, ideal, color="black", linestyle="--", label="sin(x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
-    plt.savefig("sin.pdf")
+    plt.savefig("figures/sin.pdf")
 
 
 def compare_arctan(xs):
@@ -184,7 +184,7 @@ def compare_arctan(xs):
     plt.plot(xs, ideal, color="black", linestyle="--", label="arctan(x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
-    plt.savefig("arctan.pdf")
+    plt.savefig("figures/arctan.pdf")
 
 
 def compare_exp_neg(xs):
@@ -199,13 +199,17 @@ def compare_exp_neg(xs):
     plt.plot(xs, ideal, color="black", linestyle="--", label="exp(-x)")
     plt.xlabel("x")
     plt.legend(loc = "best")
-    plt.savefig("exp.pdf")
+    plt.savefig("figures/exp.pdf")
 
 
 
 
 
 if __name__ == "__main__":
+
+    if not os.path.exists("./figures"):
+        os.makedirs("./figures")
+
     xs = np.array([i * delta for i in range (n + 1)])
     # compare_cos(xs)
     # compare_sin(xs)
