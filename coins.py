@@ -128,6 +128,18 @@ def bern_inv_one_plus_direct(x):
     return ((k % 2) == 1)
 
 
+# Return a sample from the random variable (bernoulli 1/(1+x))
+# Taylor series drawn directly from 1/(1+x)
+# Good for 0 <= x <= 1
+def bern_log_one_plus_direct(x):
+    if (x > 1): return 0
+    k = 1
+    Dk = 1.0
+    while (bernoulli.rvs(Dk * x, size=1).sum() == 1):
+        k += 1
+        Dk = float(k - 1) / float(k)
+    return ((k % 2) == 0)
+
 
 ##
 ## Tests and plots
@@ -216,6 +228,7 @@ def compare_exp_neg(xs, N):
     plt.legend(loc = "best")
     plt.savefig("figures/exp.pdf")
 
+
 def compare_inv_one_plus(xs, N):
     print("Sampling: 1/(1+x)")
 
@@ -233,29 +246,42 @@ def compare_inv_one_plus(xs, N):
     plt.savefig("figures/inv_one_plus.pdf")
 
 
+def compare_log_one_plus(xs, N):
+    print("Sampling: log(1+x)")
+
+    ideal = np.log(1.0 + xs)
+    values_log_one_plus_direct = sample_data(bern_log_one_plus_direct, xs, N)
+
+    colours = plt.cm.rainbow(np.linspace(0, 1, 1))
+
+    plt.figure(figsize=(12,8))
+    plt.title("log(1+x) samplers, N={}".format(N))
+    plt.plot(xs, values_log_one_plus_direct, color=colours[0], label="E[bern_log_one_plus_direct(x)]")
+    plt.plot(xs, ideal, color="black", linestyle="--", label="log(1+x)")
+    plt.xlabel("x")
+    plt.legend(loc = "best")
+    plt.savefig("figures/log_one_plus.pdf")
+
+
 
 if __name__ == "__main__":
 
     if not os.path.exists("./figures"):
         os.makedirs("./figures")
 
-    # Number of samples
-    N = 100
-
     # Plot grid
     n = 100
     delta =  np.pi / float (2 * n)
 
     # Range from [0, 1)
-    xs_one = np.array([i / float(N) for i in range (n)])
-
-    # Range from [0, pi/4]
+    xs_one = np.array([float(i) / float(n) for i in range (n)])
     xs_pi_div_four = np.array([i * delta for i in range (n + 1)])
 
 
-    compare_cos(xs_pi_div_four, N)
-    compare_sin(xs_pi_div_four, N)
+    # compare_cos(xs_pi_div_four, 5000)
+    # compare_sin(xs_pi_div_four, 5000)
 
-    compare_arctan(xs_one, N)
-    compare_exp_neg(xs_one, N)
-    compare_inv_one_plus(xs_one, N)
+    # compare_arctan(xs_one, 5000)
+    # compare_exp_neg(xs_one, 5000)
+    # compare_inv_one_plus(xs_one, 5000)
+    # compare_log_one_plus(xs_one, 20000)
